@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<android.support.constraint.ConstraintLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingTop="15dp"
+    tools:context="edu.wgu.gavin.c196.activities.MainActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+        <Button
+            android:id="@+id/btnViewTerms"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="@string/view_terms"
+            android:onClick="onBtnClick" />
+
+        <Button
+            android:id="@+id/btnViewCourses"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/view_courses"
+            android:onClick="onBtnClick" />
+
+        <Button
+            android:id="@+id/btnViewAssessments"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:text="@string/view_assessments"
+            android:onClick="onBtnClick" />
+
+    </LinearLayout>
+
+</android.support.constraint.ConstraintLayout>
