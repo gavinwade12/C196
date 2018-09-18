@@ -4,12 +4,17 @@ import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteOpenHelper;
 
+import java.util.ArrayList;
+import java.util.List;
+
+import edu.wgu.gavin.c196.models.ScheduledAlert;
+
 import static edu.wgu.gavin.c196.data.WGUContract.*;
 
 public class DBHelper extends SQLiteOpenHelper {
 
     private static final String DATABASE_NAME = "wgu.db";
-    private static final int DATABASE_VERSION = 1;
+    private static final int DATABASE_VERSION = 2;
 
     private static final String CREATE_ASSESSMENTS =
             "CREATE TABLE " + Assessments.TABLE_NAME + " ( " +
@@ -22,8 +27,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     Courses.TITLE + " TEXT, " +
                     Courses.NOTES + " TEXT, " +
                     Courses.STATUS + " TEXT, " +
-                    Courses.START_DATE + " TEXT, " +
-                    Courses.END_DATE + " TEXT);";
+                    Courses.START_DATE + " INTEGER, " +
+                    Courses.END_DATE + " INTEGER);";
     private static final String CREATE_COURSE_MENTORS =
             "CREATE TABLE " + CourseMentors.TABLE_NAME + " ( " +
                     CourseMentors._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -34,13 +39,13 @@ public class DBHelper extends SQLiteOpenHelper {
             "CREATE TABLE " + ScheduledAlerts.TABLE_NAME + " ( " +
                     ScheduledAlerts._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     ScheduledAlerts.NAME + " TEXT, " +
-                    ScheduledAlerts.DATE + " TEXT);";
+                    ScheduledAlerts.DATE + " INTEGER);";
     private static final String CREATE_TERMS =
             "CREATE TABLE " + Terms.TABLE_NAME + " ( " +
                     Terms._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Terms.TITLE + " TEXT, " +
-                    Terms.START_DATE + " TEXT, " +
-                    Terms.END_DATE + " TEXT);";
+                    Terms.START_DATE + " INTEGER, " +
+                    Terms.END_DATE + " INTEGER);";
     private static final String CREATE_COURSES_COURSE_MENTORS_MAPPING =
             "CREATE TABLE " + CoursesCourseMentorsMapping.TABLE_NAME + " ( " +
                     CoursesCourseMentorsMapping._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
@@ -87,5 +92,11 @@ public class DBHelper extends SQLiteOpenHelper {
 
     @Override
     public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
+        String[] tables = {Assessments.TABLE_NAME, Courses.TABLE_NAME, CourseMentors.TABLE_NAME,
+                ScheduledAlerts.TABLE_NAME, Terms.TABLE_NAME, CoursesCourseMentorsMapping.TABLE_NAME,
+                CoursesAssessmentsMapping.TABLE_NAME, TermsCoursesMapping.TABLE_NAME};
+        for (int i = 0; i < tables.length; i++)
+            db.execSQL("DROP TABLE " + tables[i]);
+        onCreate(db);
     }
 }

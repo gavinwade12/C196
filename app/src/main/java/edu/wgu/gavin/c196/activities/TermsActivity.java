@@ -1,27 +1,43 @@
 package edu.wgu.gavin.c196.activities;
 
-import android.content.ContentUris;
-import android.content.ContentValues;
 import android.database.Cursor;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
+import android.widget.ListView;
 
 import edu.wgu.gavin.c196.R;
+import edu.wgu.gavin.c196.adapters.TermsCursorAdapter;
 import edu.wgu.gavin.c196.data.WGUContract;
 
 public class TermsActivity extends AppCompatActivity {
+
+    private Cursor mCursor;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_terms);
-        ContentValues values = new ContentValues();
-        values.put(WGUContract.Terms.TITLE, "Test Title");
-        Uri uri = getContentResolver().insert(WGUContract.Terms.CONTENT_URI, values);
-        Cursor cursor = getContentResolver().query(uri, WGUContract.Terms.COLUMNS, "where _id = ?", new String[] { String.valueOf(ContentUris.parseId(uri)) }, null);
-        if (cursor != null)
-            cursor.close();
+        mCursor = getContentResolver().query(
+                WGUContract.Terms.CONTENT_URI,
+                WGUContract.Terms.COLUMNS,
+                null,
+                null,
+                "_id ASC");
+        if (mCursor == null) {
+            Log.d(this.getLocalClassName(), "Terms query failed.");
+            onBackPressed();
+        }
+
+        TermsCursorAdapter adapter = new TermsCursorAdapter(this, mCursor, 0);
+        ListView termsList = findViewById(R.id.listTerms);
+        termsList.setAdapter(adapter);
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mCursor != null)
+            mCursor.close();
+        super.onDestroy();
+    }
 }

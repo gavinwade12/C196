@@ -1,6 +1,7 @@
 package edu.wgu.gavin.c196.data;
 
 import android.content.ContentProvider;
+import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.UriMatcher;
 import android.database.Cursor;
@@ -60,6 +61,10 @@ public class WGUProvider extends ContentProvider {
         if (info == null)
             return null;
 
+        if (info.singular) {
+            selection = "_id = ?";
+            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+        }
         return database.query(info.tableName, projection, selection, selectionArgs, null, null, sortOrder);
     }
 
