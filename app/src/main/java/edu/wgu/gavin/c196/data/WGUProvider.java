@@ -7,6 +7,7 @@ import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
+import android.support.annotation.NonNull;
 import android.util.Log;
 
 import static edu.wgu.gavin.c196.data.WGUContract.*;
@@ -23,9 +24,6 @@ public class WGUProvider extends ContentProvider {
     private static final int SCHEDULED_ALERTS_ID = 8;
     private static final int TERMS = 9;
     private static final int TERMS_ID = 10;
-    private static final int COURSES_COURSE_MENTORS = 11;
-    private static final int COURSES_ASSESSMENTS = 12;
-    private static final int TERMS_COURSES = 13;
 
     private static final String ID_PATH = "/#";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -41,9 +39,6 @@ public class WGUProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, ScheduledAlerts.TABLE_NAME+ID_PATH, SCHEDULED_ALERTS_ID);
         uriMatcher.addURI(AUTHORITY, Terms.TABLE_NAME, TERMS);
         uriMatcher.addURI(AUTHORITY, Terms.TABLE_NAME+ID_PATH, TERMS_ID);
-        uriMatcher.addURI(AUTHORITY, CoursesCourseMentorsMapping.TABLE_NAME, COURSES_COURSE_MENTORS);
-        uriMatcher.addURI(AUTHORITY, CoursesAssessmentsMapping.TABLE_NAME, COURSES_ASSESSMENTS);
-        uriMatcher.addURI(AUTHORITY, TermsCoursesMapping.TABLE_NAME, TERMS_COURSES);
     }
 
     private SQLiteDatabase database;
@@ -56,7 +51,7 @@ public class WGUProvider extends ContentProvider {
     }
 
     @Override
-    public Cursor query(Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
+    public Cursor query(@NonNull Uri uri, String[] projection, String selection, String[] selectionArgs, String sortOrder) {
         ModelInfo info = ModelInfo.fromUri(uri);
         if (info == null)
             return null;
@@ -69,7 +64,7 @@ public class WGUProvider extends ContentProvider {
     }
 
     @Override
-    public String getType(Uri uri) {
+    public String getType(@NonNull Uri uri) {
         ModelInfo info = ModelInfo.fromUri(uri);
         if (info == null)
             return null;
@@ -77,7 +72,7 @@ public class WGUProvider extends ContentProvider {
     }
 
     @Override
-    public Uri insert(Uri uri, ContentValues values) {
+    public Uri insert(@NonNull Uri uri, ContentValues values) {
         ModelInfo info = ModelInfo.fromUri(uri);
         if (info == null)
             return null;
@@ -86,7 +81,7 @@ public class WGUProvider extends ContentProvider {
         try {
             id = database.insert(info.tableName, null, values);
         } catch (Exception e) {
-            Log.d("WGUProvider", e.toString());
+            Log.d(getClass().getName(), e.toString());
             return null;
         }
 
@@ -94,18 +89,28 @@ public class WGUProvider extends ContentProvider {
     }
 
     @Override
-    public int delete(Uri uri, String selection, String[] selectionArgs) {
+    public int delete(@NonNull Uri uri, String selection, String[] selectionArgs) {
         ModelInfo info = ModelInfo.fromUri(uri);
         if (info == null)
             return -1;
+
+        if (info.singular) {
+            selection = "_id = ?";
+            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+        }
         return database.delete(info.tableName, selection, selectionArgs);
     }
 
     @Override
-    public int update(Uri uri, ContentValues values, String selection, String[] selectionArgs) {
+    public int update(@NonNull Uri uri, ContentValues values, String selection, String[] selectionArgs) {
         ModelInfo info = ModelInfo.fromUri(uri);
         if (info == null)
             return -1;
+
+        if (info.singular) {
+            selection = "_id = ?";
+            selectionArgs = new String[]{String.valueOf(ContentUris.parseId(uri))};
+        }
         return database.update(info.tableName, values, selection, selectionArgs);
     }
 
@@ -152,12 +157,6 @@ public class WGUProvider extends ContentProvider {
                     return new ModelInfo(Terms.TABLE_NAME, Terms.COLUMNS);
                 case TERMS_ID:
                     return new ModelInfo(Terms.TABLE_NAME, Terms.COLUMNS, true);
-                case COURSES_COURSE_MENTORS:
-                    return new ModelInfo(CoursesCourseMentorsMapping.TABLE_NAME, CoursesCourseMentorsMapping.COLUMNS);
-                case COURSES_ASSESSMENTS:
-                    return new ModelInfo(CoursesAssessmentsMapping.TABLE_NAME, CoursesAssessmentsMapping.COLUMNS);
-                case TERMS_COURSES:
-                    return new ModelInfo(TermsCoursesMapping.TABLE_NAME, TermsCoursesMapping.COLUMNS);
             }
             return null;
         }

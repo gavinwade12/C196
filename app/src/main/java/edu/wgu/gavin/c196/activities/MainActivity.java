@@ -24,9 +24,6 @@ public class MainActivity extends AppCompatActivity {
             case R.id.btnViewCourses:
                 intent = new Intent(this, CoursesActivity.class);
                 break;
-            case R.id.btnViewAssessments:
-                intent = new Intent(this, AssessmentsActivity.class);
-                break;
         }
         if (intent != null) {
             startActivity(intent);

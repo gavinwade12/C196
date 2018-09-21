@@ -1,6 +1,13 @@
 <resources>
-    <string name="app_name">C196</string>
+    <string name="app_name">C196 - Gavin Wade</string>
     <string name="view_terms">View Terms</string>
     <string name="view_courses">View Courses</string>
     <string name="view_assessments">View Assessments</string>
+    <string name="title">Title</string>
+    <string name="date_placeholder">1/1/2001</string>
+    <string name="date_separator">-</string>
+    <string name="courses">Courses</string>
+    <string name="status">Status</string>
+    <string name="edit">Edit</string>
+    <string name="add_new">Add New</string>
 </resources>

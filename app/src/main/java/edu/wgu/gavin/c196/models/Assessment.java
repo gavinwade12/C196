@@ -4,6 +4,7 @@ public class Assessment {
     public int id;
     public String notes;
     public Type type;
+    public int courseId;
 
     public enum Type {
         Objective,

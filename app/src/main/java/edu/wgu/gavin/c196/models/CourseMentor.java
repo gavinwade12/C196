@@ -5,4 +5,5 @@ public class CourseMentor {
     public String name;
     public String phoneNumber;
     public String emailAddress;
+    public int courseId;
 }

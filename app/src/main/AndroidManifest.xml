@@ -16,9 +16,25 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".activities.TermsActivity" />
-        <activity android:name=".activities.CoursesActivity" />
-        <activity android:name=".activities.AssessmentsActivity" />
+        <activity
+            android:name=".activities.TermsActivity"
+            android:label="Terms" />
+        <activity
+            android:name=".activities.TermDetailActivity"
+            android:label="Term" />
+        <activity
+            android:name=".activities.EditTermActivity"
+            android:label="Edit Term" />
+        <activity
+            android:name=".activities.CoursesActivity"
+            android:label="Courses" />
+        <activity
+            android:name=".activities.CourseDetailActivity"
+            android:label="Course" />
+        <activity
+            android:name=".activities.AssessmentsActivity"
+            android:label="Assessments" />
+
         <provider
             android:authorities="edu.wgu.gavin.c196.provider"
             android:name=".data.WGUProvider"
