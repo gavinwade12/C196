@@ -7,6 +7,7 @@ import android.database.sqlite.SQLiteOpenHelper;
 import java.util.ArrayList;
 import java.util.List;
 
+import edu.wgu.gavin.c196.models.Assessment;
 import edu.wgu.gavin.c196.models.Course;
 
 import static edu.wgu.gavin.c196.data.WGUContract.*;
@@ -45,8 +46,9 @@ public class DBHelper extends SQLiteOpenHelper {
     private static final String CREATE_ASSESSMENTS =
             "CREATE TABLE " + Assessments.TABLE_NAME + " ( " +
                     Assessments._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    Assessments.NOTES + " TEXT, " +
+                    Assessments.TITLE + " TEXT, " +
                     Assessments.TYPE + " TEXT, " +
+                    Assessments.DUE_DATE + " INTEGER, " +
                     Assessments.COURSE_ID + " INTEGER, " +
                     "FOREIGN KEY (" + Assessments.COURSE_ID + ") REFERENCES " +
                     Courses.TABLE_NAME + "(" + Courses._ID + "));";
@@ -70,6 +72,7 @@ public class DBHelper extends SQLiteOpenHelper {
 
     DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
+        context.deleteDatabase(DATABASE_NAME);
     }
 
     @Override
@@ -91,12 +94,23 @@ public class DBHelper extends SQLiteOpenHelper {
     private void seed(SQLiteDatabase db) {
         Course.Status[] courseStatuses = {Course.Status.InProgress, Course.Status.Completed,
                 Course.Status.Dropped, Course.Status.PlanToTake};
+        Assessment.Type[] assessmentTypes = {Assessment.Type.Objective, Assessment.Type.Performance};
         for (int i = 1; i < 11; i++) {
-            db.execSQL("INSERT INTO Terms(title, start_date, end_date) VALUES ('term " + i +
+            db.execSQL("INSERT INTO terms(title, start_date, end_date) VALUES ('term " + i +
                     "', strftime('%s', 'now'), strftime('%s', 'now'));");
             for (int j = 1; j < 10; j++) {
-                db.execSQL("INSERT INTO Courses(title, status, start_date, end_date, term_id) VALUES " +
+                db.execSQL("INSERT INTO courses(title, status, start_date, end_date, term_id) VALUES " +
                     "('course_"+i+"_"+j+"', '"+courseStatuses[j%4].toString()+"', strftime('%s', 'now'), strftime('%s', 'now'), "+i+");");
+                long courseId = ((i-1) * 9) + j;
+                for (int k = 1; k < 4; k++) {
+                    db.execSQL("INSERT INTO course_mentors(course_id, name, email_address, phone_number) VALUES " +
+                        "(" + courseId + ", 'mentor_" + j + "_" + k + "', 'test" + k + "@email.com', '419-555-123" + k + "');");
+
+                    db.execSQL("INSERT INTO assessments(title, type, due_date, course_id) VALUES " +
+                        "('assessment_"+j+"_"+k+"', '"+assessmentTypes[k%2].toString()+"', strftime('%s', 'now'), "+courseId+");");
+
+                    db.execSQL("INSERT INTO course_notes(note, course_id) VALUES ('note_"+j+"_"+k+"', "+courseId+");");
+                }
             }
         }
     }

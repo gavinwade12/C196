@@ -1,17 +1,42 @@
 package edu.wgu.gavin.c196.models;
 
+import android.database.Cursor;
+
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
+
+import edu.wgu.gavin.c196.data.WGUContract;
 
 public class Course {
-    public int id;
+    public long id;
     public String title;
     public Date startDate;
     public Date anticipatedEndDate;
     public Status status;
-    public Integer termId;
-    public ArrayList<CourseMentor> mentors;
-    public ArrayList<Assessment> assessments;
+    public Long termId;
+    public List<CourseMentor> mentors;
+    public List<Assessment> assessments;
+    public List<CourseNote> notes;
+
+    public Course() {
+        status = Status.PlanToTake;
+        mentors = new ArrayList<>();
+        assessments = new ArrayList<>();
+        notes = new ArrayList<>();
+    }
+
+    public static Course fromCursor(Cursor cursor) {
+        Course course = new Course();
+        course.id = cursor.getLong(cursor.getColumnIndex(WGUContract.Courses._ID));
+        if (!cursor.isNull(cursor.getColumnIndex(WGUContract.Courses.TERM_ID)))
+            course.termId = cursor.getLong(cursor.getColumnIndex(WGUContract.Courses.TERM_ID));
+        course.title = cursor.getString(cursor.getColumnIndex(WGUContract.Courses.TITLE));
+        course.status = Course.Status.fromString(cursor.getString(cursor.getColumnIndex(WGUContract.Courses.STATUS)));
+        course.startDate = new Date(cursor.getLong(cursor.getColumnIndex(WGUContract.Courses.START_DATE)) * 1000);
+        course.anticipatedEndDate = new Date(cursor.getLong(cursor.getColumnIndex(WGUContract.Courses.END_DATE)) * 1000);
+        return course;
+    }
 
     public enum Status {
         InProgress,

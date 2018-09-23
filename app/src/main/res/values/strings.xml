@@ -10,4 +10,18 @@
     <string name="status">Status</string>
     <string name="edit">Edit</string>
     <string name="add_new">Add New</string>
+    <string name="label_name">Name:</string>
+    <string name="name">Name</string>
+    <string name="label_phone">Phone:</string>
+    <string name="phone">Phone</string>
+    <string name="label_email">Email:</string>
+    <string name="email">Email</string>
+    <string name="course_mentors">Course Mentors</string>
+    <string name="assessments">Assessments</string>
+    <string name="notes">Notes</string>
+    <string name="type">Type</string>
+    <string name="due_date">Due Date</string>
+    <string name="note">Note</string>
+    <string name="term">Term</string>
+    <string name="remove">Remove</string>
 </resources>

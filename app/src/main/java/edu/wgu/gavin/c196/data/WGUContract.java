@@ -54,11 +54,12 @@ public final class WGUContract {
         public static final Uri CONTENT_URI = Uri.parse("content://"+AUTHORITY+"/"+TABLE_NAME);
 
         public static final String _ID = "_id";
-        public static final String NOTES = "notes";
+        public static final String TITLE = "title";
         public static final String TYPE = "type";
+        public static final String DUE_DATE = "due_date";
         public static final String COURSE_ID = "course_id";
 
-        public static final String[] COLUMNS = {_ID, NOTES, TYPE, COURSE_ID};
+        public static final String[] COLUMNS = {_ID, TITLE, TYPE, DUE_DATE, COURSE_ID};
 
     }
 

@@ -3,17 +3,14 @@ package edu.wgu.gavin.c196.activities;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.widget.ListView;
-import android.widget.Toolbar;
 
 import edu.wgu.gavin.c196.R;
-import edu.wgu.gavin.c196.adapters.TermsCursorAdapter;
+import edu.wgu.gavin.c196.adapters.cursor.TermsCursorAdapter;
 import edu.wgu.gavin.c196.data.WGUContract;
 
 public class TermsActivity extends AppCompatActivity {
@@ -58,8 +55,10 @@ public class TermsActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != CREATE_TERM_REQUEST)
+        if (requestCode != CREATE_TERM_REQUEST && requestCode != VIEW_TERM_REQUEST) {
             super.onActivityResult(requestCode, resultCode, data);
+            return;
+        }
 
         displayTerms();
     }
@@ -77,6 +76,7 @@ public class TermsActivity extends AppCompatActivity {
         if (mCursor == null) {
             Log.d(this.getLocalClassName(), "Terms query failed.");
             finish();
+            return;
         }
 
         TermsCursorAdapter adapter = new TermsCursorAdapter(this, mCursor, 0);

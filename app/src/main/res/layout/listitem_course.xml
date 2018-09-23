@@ -3,56 +3,79 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
-    android:gravity="center"
-    android:paddingTop="5dp"
-    android:paddingBottom="5dp">
+    android:orientation="horizontal"
+    android:padding="5dp">
 
     <TextView
-        android:id="@+id/course_title"
+        android:id="@+id/course_id"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/title"
-        android:textStyle="bold"
-        android:textSize="20sp" />
+        android:visibility="gone" />
+
+    <Button
+        android:id="@+id/remove"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center"
+        android:textSize="17sp"
+        android:text="@string/remove"
+        android:visibility="gone" />
 
     <LinearLayout
-        android:layout_width="wrap_content"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="5dp">
+        android:orientation="vertical"
+        android:paddingTop="5dp"
+        android:paddingBottom="5dp"
+        android:gravity="center">
 
         <TextView
-            android:id="@+id/course_startDate"
+            android:id="@+id/course_title"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/date_placeholder" />
+            android:text="@string/title"
+            android:textStyle="bold"
+            android:textSize="20sp" />
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="5dp">
+
+            <TextView
+                android:id="@+id/course_startDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/date_placeholder" />
+
+            <TextView
+                android:id="@+id/date_separator"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:layout_marginEnd="5dp"
+                android:textSize="15sp"
+                android:text="@string/date_separator" />
+
+            <TextView
+                android:id="@+id/course_endDate"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textSize="15sp"
+                android:text="@string/date_placeholder" />
+
+        </LinearLayout>
 
         <TextView
-            android:id="@+id/date_separator"
+            android:id="@+id/course_status"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:layout_marginEnd="5dp"
-            android:textSize="15sp"
-            android:text="@string/date_separator" />
-
-        <TextView
-            android:id="@+id/course_endDate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:textSize="15sp"
-            android:text="@string/date_placeholder" />
+            android:layout_marginTop="5dp"
+            android:textSize="18sp"
+            android:text="@string/status" />
 
     </LinearLayout>
-
-    <TextView
-        android:id="@+id/course_status"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="5dp"
-        android:textSize="18sp"
-        android:text="@string/status" />
 
 </LinearLayout>

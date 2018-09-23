@@ -15,22 +15,21 @@ import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.time.Instant;
 import java.util.Date;
 import java.util.Locale;
 
 import edu.wgu.gavin.c196.R;
-import edu.wgu.gavin.c196.adapters.CoursesCursorAdapter;
+import edu.wgu.gavin.c196.adapters.cursor.CoursesCursorAdapter;
+import edu.wgu.gavin.c196.adapters.view.TermDetailViewAdapter;
 import edu.wgu.gavin.c196.data.WGUContract;
+import edu.wgu.gavin.c196.models.Term;
 
 public class TermDetailActivity extends AppCompatActivity {
 
     public static int EDIT_TERM_REQUEST = 3;
-    private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
     private long mTermId;
     private Cursor mCourseCursor;
     private ContentResolver mContentResolver;
-
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -47,21 +46,6 @@ public class TermDetailActivity extends AppCompatActivity {
 
         mContentResolver = getContentResolver();
         displayTermInformation();
-
-        mCourseCursor = mContentResolver.query(
-                WGUContract.Courses.CONTENT_URI,
-                WGUContract.Courses.COLUMNS,
-                "term_id = ?",
-                new String[]{String.valueOf(mTermId)},
-                WGUContract.Courses.START_DATE + " ASC");
-        if (mCourseCursor == null) {
-            Log.d(getLocalClassName(), "Courses query failed.");
-            return;
-        }
-
-        CoursesCursorAdapter adapter = new CoursesCursorAdapter(this, mCourseCursor, 0);
-        ListView coursesList = findViewById(R.id.term_courses);
-        coursesList.setAdapter(adapter);
     }
 
     @Override
@@ -108,12 +92,11 @@ public class TermDetailActivity extends AppCompatActivity {
 
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-        if (requestCode != EDIT_TERM_REQUEST) {
+        if (requestCode != EDIT_TERM_REQUEST && requestCode != CoursesActivity.VIEW_COURSE_REQUEST) {
             super.onActivityResult(requestCode, resultCode, data);
             return;
         }
 
-        // If the request failed, then the data likely wasn't updated.
         if (resultCode != RESULT_OK)
             return;
 
@@ -127,32 +110,40 @@ public class TermDetailActivity extends AppCompatActivity {
     }
 
     private void displayTermInformation() {
-        String title = "";
-        Date startDate = new Date(),
-                endDate = new Date();
+        Term term;
         try (Cursor termCursor = mContentResolver.query(
                 ContentUris.withAppendedId(WGUContract.Terms.CONTENT_URI, mTermId),
                 WGUContract.Terms.COLUMNS,
                 null, null, null)) {
-            if (termCursor == null || !termCursor.moveToFirst()) {
-                Log.d(getLocalClassName(), "Failed to get term with Id: " + mTermId);
-                finish();
-            }
+            if (termCursor == null)
+                throw new Exception("Term query returned a null cursor.");
+            else if (!termCursor.moveToFirst())
+                throw new Exception("Failed to get term with Id: " + mTermId);
 
-            title = termCursor.getString(termCursor.getColumnIndex(WGUContract.Terms.TITLE));
-            startDate = new Date(termCursor.getLong(termCursor.getColumnIndex(WGUContract.Terms.START_DATE)) * 1000);
-            endDate = new Date(termCursor.getLong(termCursor.getColumnIndex(WGUContract.Terms.END_DATE)) * 1000);
+            term = Term.fromCursor(termCursor);
         } catch (Exception e) {
             Log.d(getLocalClassName(), "Failure displaying term information: " + e.toString());
             finish();
+            return;
         }
 
-        TextView titleView = findViewById(R.id.term_title);
-        TextView startDateView = findViewById(R.id.term_startDate);
-        TextView endDateView = findViewById(R.id.term_endDate);
+        if (mCourseCursor != null)
+            mCourseCursor.close();
 
-        titleView.setText(title);
-        startDateView.setText(mDateFormat.format(startDate));
-        endDateView.setText(mDateFormat.format(endDate));
+        mCourseCursor = mContentResolver.query(
+                WGUContract.Courses.CONTENT_URI,
+                WGUContract.Courses.COLUMNS,
+                WGUContract.Courses.TERM_ID + " = ?",
+                new String[]{String.valueOf(mTermId)},
+                WGUContract.Courses.START_DATE + " ASC");
+        if (mCourseCursor == null) {
+            Log.d(getLocalClassName(), "Courses query failed.");
+            finish();
+            return;
+        }
+
+        CoursesCursorAdapter adapter = new CoursesCursorAdapter(this, mCourseCursor ,0, null);
+
+        TermDetailViewAdapter.from(term, adapter, findViewById(android.R.id.content)).render();
     }
 }

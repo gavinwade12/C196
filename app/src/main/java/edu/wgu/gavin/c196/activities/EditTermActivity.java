@@ -19,6 +19,8 @@ import android.view.Window;
 import android.widget.Button;
 import android.widget.DatePicker;
 import android.widget.EditText;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
@@ -27,22 +29,22 @@ import java.util.Date;
 import java.util.Locale;
 
 import edu.wgu.gavin.c196.R;
+import edu.wgu.gavin.c196.adapters.cursor.CoursesCursorAdapter;
 import edu.wgu.gavin.c196.data.WGUContract;
+import edu.wgu.gavin.c196.models.Term;
 
 public class EditTermActivity extends AppCompatActivity {
 
     private static DateFormat mDateFormat = new SimpleDateFormat("MM/dd/yyyy", Locale.getDefault());
 
-    private String mTitle;
-    private Date mStartDate;
-    private Date mEndDate;
+    private Term mTerm = new Term();
 
     private Button mBtnStartDate;
     private Button mBtnEndDate;
 
-    private boolean mIsNewTerm;
     private Uri mTermUri;
     private ContentResolver mContentResolver;
+    private Cursor mCourseCursor;
 
     @Override
     protected void onCreate(@Nullable Bundle savedInstanceState) {
@@ -58,8 +60,8 @@ public class EditTermActivity extends AppCompatActivity {
         txtTitle.addTextChangedListener(new TextWatcher() {
             @Override
             public void afterTextChanged(Editable editable) {
-                mTitle = editable.toString();
-                updateFields(true);
+                mTerm.title = editable.toString();
+                updateFields();
             }
 
             @Override
@@ -71,12 +73,11 @@ public class EditTermActivity extends AppCompatActivity {
 
         Bundle extras = getIntent().getExtras();
         if (extras == null || !extras.containsKey(WGUContract.Terms._ID)) {
-            mIsNewTerm = true;
             Date currentDate = Calendar.getInstance().getTime();
-            mStartDate = currentDate;
-            mEndDate = currentDate;
-            mTitle = "";
-            txtTitle.setText(mTitle);
+            mTerm.startDate = currentDate;
+            mTerm.endDate = currentDate;
+            mTerm.title = "";
+            txtTitle.setText(mTerm.title);
             return;
         }
 
@@ -87,21 +88,20 @@ public class EditTermActivity extends AppCompatActivity {
                 ContentUris.withAppendedId(WGUContract.Terms.CONTENT_URI, termId),
                 WGUContract.Terms.COLUMNS,
                 null, null, null)) {
-            if (termCursor == null || !termCursor.moveToFirst()) {
-                Log.d(getLocalClassName(), "Failed to get term with Id: " + termId);
-                finish();
-            }
+            if (termCursor == null)
+                throw new Exception("Term query returned a null cursor.");
+            else if (!termCursor.moveToFirst())
+                throw new Exception("Failed to get term with Id: " + termId);
 
-            mTitle = termCursor.getString(termCursor.getColumnIndex(WGUContract.Terms.TITLE));
-            mStartDate = new Date(termCursor.getLong(termCursor.getColumnIndex(WGUContract.Terms.START_DATE)) * 1000);
-            mEndDate = new Date(termCursor.getLong(termCursor.getColumnIndex(WGUContract.Terms.END_DATE)) * 1000);
+            mTerm = Term.fromCursor(termCursor);
         } catch (Exception e) {
             Log.d(getLocalClassName(), "Failure displaying term information: " + e.toString());
             finish();
+            return;
         }
 
-        txtTitle.setText(mTitle);
-        updateFields(false);
+        txtTitle.setText(mTerm.title);
+        renderCourses();
     }
 
     @Override
@@ -110,13 +110,20 @@ public class EditTermActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    @Override
+    protected void onDestroy() {
+        if (mCourseCursor != null && !mCourseCursor.isClosed())
+            mCourseCursor.close();
+        super.onDestroy();
+    }
+
     public void onDateBtnClick(View view) {
         Calendar calendar = Calendar.getInstance();
         final int viewId = view.getId();
         if (viewId == R.id.term_startDate)
-            calendar.setTime(mStartDate);
+            calendar.setTime(mTerm.startDate);
         else if (viewId == R.id.term_endDate)
-            calendar.setTime(mEndDate);
+            calendar.setTime(mTerm.endDate);
 
         int year = calendar.get(Calendar.YEAR);
         int month = calendar.get(Calendar.MONTH);
@@ -132,10 +139,10 @@ public class EditTermActivity extends AppCompatActivity {
                         newCalendar.set(year, month, day);
                         Date newDate = newCalendar.getTime();
                         if (viewId == R.id.term_startDate)
-                            mStartDate = newDate;
+                            mTerm.startDate = newDate;
                         else if (viewId == R.id.term_endDate)
-                            mEndDate = newDate;
-                        updateFields(true);
+                            mTerm.endDate = newDate;
+                        updateFields();
                     }
                 },
                 year, month, day);
@@ -145,22 +152,21 @@ public class EditTermActivity extends AppCompatActivity {
         dialog.show();
     }
 
-    private void updateFields(boolean persistent) {
-        mBtnStartDate.setText(mDateFormat.format(mStartDate));
-        mBtnEndDate.setText(mDateFormat.format(mEndDate));
-
-        if (!persistent)
-            return;
+    private void updateFields() {
+        mBtnStartDate.setText(mDateFormat.format(mTerm.startDate));
+        mBtnEndDate.setText(mDateFormat.format(mTerm.endDate));
 
         ContentValues values = new ContentValues();
-        values.put(WGUContract.Terms.TITLE, mTitle);
-        values.put(WGUContract.Terms.START_DATE, mStartDate.getTime()/1000);
-        values.put(WGUContract.Terms.END_DATE, mEndDate.getTime()/1000);
+        values.put(WGUContract.Terms.TITLE, mTerm.title);
+        values.put(WGUContract.Terms.START_DATE, mTerm.startDate.getTime()/1000);
+        values.put(WGUContract.Terms.END_DATE, mTerm.endDate.getTime()/1000);
 
         if (mTermUri == null) {
             mTermUri = mContentResolver.insert(WGUContract.Terms.CONTENT_URI, values);
             if (mTermUri == null)
                 Log.d(getLocalClassName(), "Failed inserting term.");
+            else
+                mTerm.id = ContentUris.parseId(mTermUri);
             return;
         }
 
@@ -168,4 +174,42 @@ public class EditTermActivity extends AppCompatActivity {
         if (updated == 0)
             Log.d(getLocalClassName(), "Failed to updated term with Id: " + ContentUris.parseId(mTermUri));
     }
+
+    private void renderCourses() {
+        if (mCourseCursor != null)
+            mCourseCursor.close();
+
+        mCourseCursor = mContentResolver.query(
+                WGUContract.Courses.CONTENT_URI,
+                WGUContract.Courses.COLUMNS,
+                WGUContract.Courses.TERM_ID + " = ?",
+                new String[]{String.valueOf(mTerm.id)},
+                WGUContract.Courses.START_DATE + " ASC");
+
+        if (mCourseCursor == null) {
+            Log.d(getLocalClassName(), "Courses query failed.");
+            finish();
+            return;
+        }
+
+        ListView courseListView = findViewById(R.id.term_courses);
+        CoursesCursorAdapter adapter = new CoursesCursorAdapter(this, mCourseCursor, 0, new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                View parentView = (View)view.getParent();
+                TextView idView = parentView.findViewById(R.id.course_id);
+                long courseId = Long.valueOf(idView.getText().toString(), 10);
+                ContentValues values = new ContentValues();
+                values.put(WGUContract.Courses.TERM_ID, (String)null);
+                mContentResolver.update(
+                        ContentUris.withAppendedId(WGUContract.Courses.CONTENT_URI, courseId),
+                        values,
+                        null,
+                        null);
+                renderCourses();
+            }
+        });
+        courseListView.setAdapter(adapter);
+    }
+
 }

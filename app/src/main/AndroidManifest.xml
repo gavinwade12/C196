@@ -32,6 +32,9 @@
             android:name=".activities.CourseDetailActivity"
             android:label="Course" />
         <activity
+            android:name=".activities.EditCourseActivity"
+            android:label="Edit Course" />
+        <activity
             android:name=".activities.AssessmentsActivity"
             android:label="Assessments" />
 
