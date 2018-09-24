@@ -35,8 +35,14 @@
             android:name=".activities.EditCourseActivity"
             android:label="Edit Course" />
         <activity
-            android:name=".activities.AssessmentsActivity"
-            android:label="Assessments" />
+            android:name=".activities.EditAssessmentActivity"
+            android:label="Edit Assessment" />
+        <activity
+            android:name=".activities.EditCourseMentorActivity"
+            android:label="Edit Course Mentor" />
+        <activity
+            android:name=".activities.EditNoteActivity"
+            android:label="Edit Note" />
 
         <provider
             android:authorities="edu.wgu.gavin.c196.provider"

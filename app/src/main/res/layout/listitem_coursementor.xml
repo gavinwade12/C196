@@ -3,74 +3,107 @@
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="vertical"
+    android:orientation="horizontal"
     android:padding="7dp">
 
     <LinearLayout
-        android:layout_width="match_parent"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal">
+        android:orientation="vertical">
 
-        <TextView
-            android:layout_width="wrap_content"
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="@string/label_name"
-            android:textStyle="bold"
-            android:textSize="17sp" />
+            android:orientation="horizontal">
 
-        <TextView
-            android:id="@+id/mentor_name"
-            android:layout_width="wrap_content"
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_name"
+                android:textStyle="bold"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/mentor_name"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="17sp"
+                android:text="@string/name" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="17sp"
-            android:text="@string/name" />
+            android:orientation="horizontal"
+            android:layout_marginTop="7dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_phone"
+                android:textStyle="bold"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/mentor_phone"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="17sp"
+                android:text="@string/phone" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="7dp">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/label_email"
+                android:textStyle="bold"
+                android:textSize="17sp" />
+
+            <TextView
+                android:id="@+id/mentor_email"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginStart="5dp"
+                android:textSize="17sp"
+                android:text="@string/email" />
+
+        </LinearLayout>
 
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="7dp">
+        android:layout_height="match_parent"
+        android:gravity="end">
 
-        <TextView
+        <Button
+            android:id="@+id/mentor_edit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="@string/label_phone"
-            android:textStyle="bold"
-            android:textSize="17sp" />
+            android:visibility="gone"
+            android:layout_gravity="center"
+            android:textAllCaps="false"
+            android:text="@string/edit" />
 
-        <TextView
-            android:id="@+id/mentor_phone"
+        <Button
+            android:id="@+id/mentor_delete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:visibility="gone"
+            android:layout_gravity="center"
             android:layout_marginStart="5dp"
-            android:textSize="17sp"
-            android:text="@string/phone" />
-
-    </LinearLayout>
-
-    <LinearLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:layout_marginTop="7dp">
-
-        <TextView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:text="@string/label_email"
-            android:textStyle="bold"
-            android:textSize="17sp" />
-
-        <TextView
-            android:id="@+id/mentor_email"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginStart="5dp"
-            android:textSize="17sp"
-            android:text="@string/email" />
+            android:textAllCaps="false"
+            android:text="@string/delete" />
 
     </LinearLayout>
 

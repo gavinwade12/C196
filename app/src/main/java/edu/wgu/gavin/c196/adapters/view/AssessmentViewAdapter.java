@@ -1,6 +1,7 @@
 package edu.wgu.gavin.c196.adapters.view;
 
 import android.view.View;
+import android.widget.Button;
 import android.widget.TextView;
 
 import java.text.DateFormat;
@@ -16,14 +17,26 @@ public class AssessmentViewAdapter implements ViewAdapter {
 
     private Assessment mAssessment;
     private View mView;
+    private View.OnClickListener mOnEditClickListener;
+    private View.OnClickListener mOnDeleteClickListener;
 
-    private AssessmentViewAdapter(Assessment assessment, View view) {
+    private AssessmentViewAdapter(Assessment assessment, View view,
+                                  View.OnClickListener onEditClickListener,
+                                  View.OnClickListener onDeleteClickListener) {
         mAssessment = assessment;
         mView = view;
+        mOnEditClickListener = onEditClickListener;
+        mOnDeleteClickListener = onDeleteClickListener;
     }
 
     public static AssessmentViewAdapter from(Assessment assessment, View view) {
-        return new AssessmentViewAdapter(assessment, view);
+        return from(assessment, view, null, null);
+    }
+
+    public static AssessmentViewAdapter from(Assessment assessment, View view,
+                                             View.OnClickListener onEditClickListener,
+                                             View.OnClickListener onDeleteClickListener) {
+        return new AssessmentViewAdapter(assessment, view, onEditClickListener, onDeleteClickListener);
     }
 
     public void render() {
@@ -34,6 +47,18 @@ public class AssessmentViewAdapter implements ViewAdapter {
         titleView.setText(mAssessment.title);
         typeView.setText(mAssessment.type.toString());
         dueDateView.setText(mDateFormat.format(mAssessment.dueDate));
+
+        if (mOnEditClickListener != null) {
+            Button editBtn = mView.findViewById(R.id.assessment_edit);
+            editBtn.setVisibility(View.VISIBLE);
+            editBtn.setOnClickListener(mOnEditClickListener);
+        }
+
+        if (mOnDeleteClickListener != null) {
+            Button deleteBtn = mView.findViewById(R.id.assessment_delete);
+            deleteBtn.setVisibility(View.VISIBLE);
+            deleteBtn.setOnClickListener(mOnDeleteClickListener);
+        }
     }
 
 }

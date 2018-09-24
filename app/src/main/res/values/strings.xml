@@ -24,4 +24,6 @@
     <string name="note">Note</string>
     <string name="term">Term</string>
     <string name="remove">Remove</string>
+    <string name="delete">Delete</string>
+    <string name="unassigned">Unassigned</string>
 </resources>
