@@ -150,12 +150,15 @@ public class EditCourseActivity extends AppCompatActivity {
     @Override
     protected void onActivityResult(int requestCode, int resultCode, Intent data) {
         switch (requestCode) {
+            case ADD_COURSE_MENTOR_REQUEST:
             case EDIT_COURSE_MENTOR_REQUEST:
                 renderCourseMentors();
                 break;
+            case ADD_ASSESSMENT_REQUEST:
             case EDIT_ASSESSMENT_REQUEST:
                 renderAssessments();
                 break;
+            case ADD_COURSE_NOTE_REQUEST:
             case EDIT_COURSE_NOTE_REQUEST:
                 renderNotes();
                 break;
@@ -238,6 +241,27 @@ public class EditCourseActivity extends AppCompatActivity {
                 .show();
     }
 
+    public void onAddBtnClick(View view) {
+        Intent intent;
+        switch (view.getId()) {
+            case R.id.mentor_add:
+                intent = new Intent(this, EditCourseMentorActivity.class);
+                intent.putExtra(WGUContract.CourseMentors.COURSE_ID, mCourse.id);
+                startActivityForResult(intent, ADD_COURSE_MENTOR_REQUEST);
+                break;
+            case R.id.assessment_add:
+                intent = new Intent(this, EditAssessmentActivity.class);
+                intent.putExtra(WGUContract.Assessments.COURSE_ID, mCourse.id);
+                startActivityForResult(intent, ADD_ASSESSMENT_REQUEST);
+                break;
+            case R.id.note_add:
+                intent = new Intent(this, EditNoteActivity.class);
+                intent.putExtra(WGUContract.CourseNotes.COURSE_ID, mCourse.id);
+                startActivityForResult(intent, ADD_COURSE_NOTE_REQUEST);
+                break;
+        }
+    }
+
     private void updateFields() {
         mBtnStartDate.setText(mDateFormat.format(mCourse.startDate));
         mBtnEndDate.setText(mDateFormat.format(mCourse.anticipatedEndDate));
@@ -262,8 +286,13 @@ public class EditCourseActivity extends AppCompatActivity {
 
         if (mCourseUri == null) {
             mCourseUri = mContentResolver.insert(WGUContract.Courses.CONTENT_URI, values);
-            if (mCourseUri == null)
+            if (mCourseUri == null) {
                 Log.d(getLocalClassName(), "Failed to insert course.");
+                finish();
+                return;
+            }
+
+            mCourse.id = ContentUris.parseId(mCourseUri);
             return;
         }
 
@@ -300,6 +329,7 @@ public class EditCourseActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Intent intent = new Intent(EditCourseActivity.this, EditCourseMentorActivity.class);
                             intent.putExtra(WGUContract.CourseMentors._ID, mentor.id);
+                            intent.putExtra(WGUContract.CourseMentors.COURSE_ID, mCourse.id);
                             startActivityForResult(intent, EDIT_COURSE_MENTOR_REQUEST);
                         }
                     },
@@ -345,6 +375,7 @@ public class EditCourseActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Intent intent = new Intent(EditCourseActivity.this, EditAssessmentActivity.class);
                             intent.putExtra(WGUContract.Assessments._ID, assessment.id);
+                            intent.putExtra(WGUContract.Assessments.COURSE_ID, mCourse.id);
                             startActivityForResult(intent, EDIT_ASSESSMENT_REQUEST);
                         }
                     },
@@ -390,6 +421,7 @@ public class EditCourseActivity extends AppCompatActivity {
                         public void onClick(View view) {
                             Intent intent = new Intent(EditCourseActivity.this, EditNoteActivity.class);
                             intent.putExtra(WGUContract.CourseNotes._ID, note.id);
+                            intent.putExtra(WGUContract.CourseNotes.COURSE_ID, mCourse.id);
                             startActivityForResult(intent, EDIT_COURSE_NOTE_REQUEST);
                         }
                     }, new View.OnClickListener() {

@@ -134,7 +134,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                     WGUContract.CourseNotes.COLUMNS,
                     WGUContract.CourseNotes.COURSE_ID + " = ?",
                     new String[]{String.valueOf(mCourseId)},
-                    WGUContract.CourseNotes._ID + " ASC")) {
+                    WGUContract.CourseNotes.NOTE + " ASC")) {
                 if (noteCursor == null)
                     throw new Exception("Course note query returned a null cursor.");
                 while (noteCursor.moveToNext())

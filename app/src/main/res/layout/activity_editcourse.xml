@@ -79,13 +79,32 @@
                 android:textAllCaps="false"
                 android:onClick="onTermBtnClick" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="@string/course_mentors"
-                android:layout_marginTop="10dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="@string/course_mentors"
+                    android:gravity="center_vertical" />
+
+                <Button
+                    android:id="@+id/mentor_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_with_plus"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="25dp"
+                    android:onClick="onAddBtnClick" />
+
+            </LinearLayout>
+
 
             <LinearLayout
                 android:id="@+id/course_mentors"
@@ -94,13 +113,31 @@
                 android:orientation="vertical"
                 android:layout_marginStart="10dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="@string/assessments"
-                android:layout_marginTop="10dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="@string/assessments"
+                    android:gravity="center_vertical"/>
+
+                <Button
+                    android:id="@+id/assessment_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_with_plus"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="47dp"
+                    android:onClick="onAddBtnClick" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/course_assessments"
@@ -110,13 +147,30 @@
                 android:layout_marginTop="10dp"
                 android:layout_marginStart="10dp" />
 
-            <TextView
-                android:layout_width="wrap_content"
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:textSize="20sp"
-                android:textStyle="bold"
-                android:text="@string/notes"
-                android:layout_marginTop="10dp" />
+                android:orientation="horizontal"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textSize="20sp"
+                    android:textStyle="bold"
+                    android:text="@string/notes" />
+
+                <Button
+                    android:id="@+id/note_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="@string/add_with_plus"
+                    android:background="@color/colorPrimary"
+                    android:textColor="@color/white"
+                    android:layout_marginStart="116dp"
+                    android:onClick="onAddBtnClick" />
+
+            </LinearLayout>
 
             <LinearLayout
                 android:id="@+id/course_notes"
