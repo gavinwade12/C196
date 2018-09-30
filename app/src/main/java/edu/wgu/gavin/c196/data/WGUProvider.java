@@ -22,10 +22,8 @@ public class WGUProvider extends ContentProvider {
     private static final int COURSE_MENTORS_ID = 6;
     private static final int COURSE_NOTES = 7;
     private static final int COURSE_NOTES_ID = 8;
-    private static final int SCHEDULED_ALERTS = 9;
-    private static final int SCHEDULED_ALERTS_ID = 10;
-    private static final int TERMS = 11;
-    private static final int TERMS_ID = 12;
+    private static final int TERMS = 9;
+    private static final int TERMS_ID = 10;
 
     private static final String ID_PATH = "/#";
     private static final UriMatcher uriMatcher = new UriMatcher(UriMatcher.NO_MATCH);
@@ -39,8 +37,6 @@ public class WGUProvider extends ContentProvider {
         uriMatcher.addURI(AUTHORITY, CourseMentors.TABLE_NAME+ID_PATH, COURSE_MENTORS_ID);
         uriMatcher.addURI(AUTHORITY, CourseNotes.TABLE_NAME, COURSE_NOTES);
         uriMatcher.addURI(AUTHORITY, CourseNotes.TABLE_NAME+ID_PATH, COURSE_NOTES_ID);
-        uriMatcher.addURI(AUTHORITY, ScheduledAlerts.TABLE_NAME, SCHEDULED_ALERTS);
-        uriMatcher.addURI(AUTHORITY, ScheduledAlerts.TABLE_NAME+ID_PATH, SCHEDULED_ALERTS_ID);
         uriMatcher.addURI(AUTHORITY, Terms.TABLE_NAME, TERMS);
         uriMatcher.addURI(AUTHORITY, Terms.TABLE_NAME+ID_PATH, TERMS_ID);
     }
@@ -157,10 +153,6 @@ public class WGUProvider extends ContentProvider {
                         return new ModelInfo(CourseNotes.TABLE_NAME, CourseNotes.COLUMNS);
                 case COURSE_NOTES_ID:
                     return new ModelInfo(CourseNotes.TABLE_NAME, CourseNotes.COLUMNS, true);
-                case SCHEDULED_ALERTS:
-                    return new ModelInfo(ScheduledAlerts.TABLE_NAME, ScheduledAlerts.COLUMNS);
-                case SCHEDULED_ALERTS_ID:
-                    return new ModelInfo(ScheduledAlerts.TABLE_NAME, ScheduledAlerts.COLUMNS, true);
                 case TERMS:
                     return new ModelInfo(Terms.TABLE_NAME, Terms.COLUMNS);
                 case TERMS_ID:

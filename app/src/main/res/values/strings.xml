@@ -27,4 +27,11 @@
     <string name="delete">Delete</string>
     <string name="unassigned">Unassigned</string>
     <string name="add_with_plus">+ Add</string>
+    <string name="share">Share</string>
+    <string name="schedule_alert">Schedule Alert</string>
+    <string name="start_date">Start Date</string>
+    <string name="progress">Progress</string>
+    <string name="completed">Completed</string>
+    <string name="progress_separator">/</string>
+    <string name="total">Total</string>
 </resources>

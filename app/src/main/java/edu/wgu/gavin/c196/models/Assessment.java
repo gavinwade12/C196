@@ -13,6 +13,7 @@ public class Assessment {
     public long courseId;
     public String title;
     public Type type;
+    public Date startDate;
     public Date dueDate;
     public List<CourseNote> courseNotes;
 
@@ -22,6 +23,7 @@ public class Assessment {
         assessment.courseId = cursor.getLong(cursor.getColumnIndex(WGUContract.Assessments.COURSE_ID));
         assessment.title = cursor.getString(cursor.getColumnIndex(WGUContract.Assessments.TITLE));
         assessment.type = Type.fromString(cursor.getString(cursor.getColumnIndex(WGUContract.Assessments.TYPE)));
+        assessment.startDate = new Date(cursor.getLong(cursor.getColumnIndex(WGUContract.Assessments.START_DATE)) * 1000);
         assessment.dueDate = new Date(cursor.getLong(cursor.getColumnIndex(WGUContract.Assessments.DUE_DATE)) * 1000);
         return assessment;
     }

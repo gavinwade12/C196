@@ -48,6 +48,7 @@ public class DBHelper extends SQLiteOpenHelper {
                     Assessments._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
                     Assessments.TITLE + " TEXT, " +
                     Assessments.TYPE + " TEXT, " +
+                    Assessments.START_DATE + " TEXT, " +
                     Assessments.DUE_DATE + " INTEGER, " +
                     Assessments.COURSE_ID + " INTEGER, " +
                     "FOREIGN KEY (" + Assessments.COURSE_ID + ") REFERENCES " +
@@ -64,12 +65,6 @@ public class DBHelper extends SQLiteOpenHelper {
                     "FOREIGN KEY (" + CourseMentors.COURSE_ID + ") REFERENCES " +
                         Courses.TABLE_NAME + "(" + Courses._ID + "));";
 
-    private static final String CREATE_SCHEDULED_ALERTS =
-            "CREATE TABLE " + ScheduledAlerts.TABLE_NAME + " ( " +
-                    ScheduledAlerts._ID + " INTEGER PRIMARY KEY AUTOINCREMENT, " +
-                    ScheduledAlerts.NAME + " TEXT, " +
-                    ScheduledAlerts.DATE + " INTEGER);";
-
     DBHelper(Context context) {
         super(context, DATABASE_NAME, null, DATABASE_VERSION);
         context.deleteDatabase(DATABASE_NAME);
@@ -82,7 +77,6 @@ public class DBHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_COURSE_NOTES);
         db.execSQL(CREATE_ASSESSMENTS);
         db.execSQL(CREATE_COURSE_MENTORS);
-        db.execSQL(CREATE_SCHEDULED_ALERTS);
 
         seed(db);
     }
@@ -106,8 +100,8 @@ public class DBHelper extends SQLiteOpenHelper {
                     db.execSQL("INSERT INTO course_mentors(course_id, name, email_address, phone_number) VALUES " +
                         "(" + courseId + ", 'mentor_" + j + "_" + k + "', 'test" + k + "@email.com', '419-555-123" + k + "');");
 
-                    db.execSQL("INSERT INTO assessments(title, type, due_date, course_id) VALUES " +
-                        "('assessment_"+j+"_"+k+"', '"+assessmentTypes[k%2].toString()+"', strftime('%s', 'now'), "+courseId+");");
+                    db.execSQL("INSERT INTO assessments(title, type, start_date, due_date, course_id) VALUES " +
+                        "('assessment_"+j+"_"+k+"', '"+assessmentTypes[k%2].toString()+"', strftime('%s', 'now'), strftime('%s', 'now'), "+courseId+");");
 
                     db.execSQL("INSERT INTO course_notes(note, course_id) VALUES ('note_"+j+"_"+k+"', "+courseId+");");
                 }

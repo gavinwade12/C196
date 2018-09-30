@@ -1,18 +1,29 @@
 package edu.wgu.gavin.c196.activities;
 
+import android.app.AlarmManager;
+import android.app.PendingIntent;
 import android.content.ContentResolver;
 import android.content.ContentUris;
+import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.support.annotation.Nullable;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.AdapterView;
+
+import java.util.Calendar;
+import java.util.Date;
 
 import edu.wgu.gavin.c196.R;
 import edu.wgu.gavin.c196.adapters.view.CourseDetailViewAdapter;
+import edu.wgu.gavin.c196.data.AlertReceiver;
 import edu.wgu.gavin.c196.data.WGUContract;
 import edu.wgu.gavin.c196.models.Assessment;
 import edu.wgu.gavin.c196.models.Course;
@@ -25,6 +36,7 @@ public class CourseDetailActivity extends AppCompatActivity {
     public static int EDIT_COURSE_REQUEST = 6;
 
     private long mCourseId;
+    private Course mCourse;
     private ContentResolver mContentResolver;
 
     @Override
@@ -86,8 +98,58 @@ public class CourseDetailActivity extends AppCompatActivity {
         super.onBackPressed();
     }
 
+    public void onShareBtnClick(View view) {
+        StringBuilder text = new StringBuilder();
+        for (CourseNote note : mCourse.notes) {
+            text.append(note.note).append("\n");
+        }
+
+        Intent intent = new Intent(Intent.ACTION_SEND);
+        intent.setType("text/plain");
+        intent.putExtra(Intent.EXTRA_TEXT, text.toString());
+        startActivity(intent);
+    }
+
+    public void onScheduleAlertBtnClick(View view) {
+        final String[] items = new String[]{"Start Date", "End Date"};
+        new AlertDialog.Builder(this)
+                .setTitle(R.string.schedule_alert)
+                .setItems(items, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Date alertDate = new Date();
+                        String time = "";
+                        switch (i) {
+                            case 0:
+                                alertDate = mCourse.startDate;
+                                time = "start";
+                                break;
+                            case 1:
+                                alertDate = mCourse.anticipatedEndDate;
+                                time = "end";
+                                break;
+                        }
+                        Calendar calendar = Calendar.getInstance();
+                        calendar.setTime(alertDate);
+
+                        AlarmManager alarmManager = (AlarmManager) getSystemService(Context.ALARM_SERVICE);
+                        if (alarmManager == null) {
+                            Log.d(getLocalClassName(), "Failed to get alarm manager system service.");
+                            return;
+                        }
+
+                        Intent intent = new Intent(CourseDetailActivity.this, AlertReceiver.class);
+                        intent.putExtra("event", mCourse.title);
+                        intent.putExtra("time", time);
+                        PendingIntent pendingIntent = PendingIntent.getBroadcast(
+                                CourseDetailActivity.this, 0, intent, 0);
+                        alarmManager.set(AlarmManager.RTC_WAKEUP, calendar.getTimeInMillis(), pendingIntent);
+                    }
+                })
+                .show();
+    }
+
     public void displayCourseInfo() {
-        Course course;
         String termTitle = "";
         try {
             try (Cursor courseCursor = mContentResolver.query(
@@ -101,17 +163,17 @@ public class CourseDetailActivity extends AppCompatActivity {
                 else if (!courseCursor.moveToFirst())
                     throw new Exception("Failed to find course with Id: " + mCourseId);
 
-                course = Course.fromCursor(courseCursor);
+                mCourse = Course.fromCursor(courseCursor);
             }
 
-            if (course.termId != null) {
+            if (mCourse.termId != null) {
                 try (Cursor termCursor = mContentResolver.query(
-                        ContentUris.withAppendedId(WGUContract.Terms.CONTENT_URI, course.termId),
+                        ContentUris.withAppendedId(WGUContract.Terms.CONTENT_URI, mCourse.termId),
                         WGUContract.Terms.COLUMNS, null, null, null)) {
                     if (termCursor == null)
                         throw new Exception("Course term query returned a null cursor.");
                     else if (!termCursor.moveToFirst())
-                        throw new Exception("Failed to find term with Id: " + course.termId);
+                        throw new Exception("Failed to find term with Id: " + mCourse.termId);
 
                     termTitle = Term.fromCursor(termCursor).title;
                 }
@@ -126,7 +188,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 if (mentorCursor == null)
                     throw new Exception("Course mentor query returned a null cursor.");
                 while (mentorCursor.moveToNext())
-                    course.mentors.add(CourseMentor.fromCursor(mentorCursor));
+                    mCourse.mentors.add(CourseMentor.fromCursor(mentorCursor));
             }
 
             try (Cursor noteCursor = mContentResolver.query(
@@ -138,7 +200,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 if (noteCursor == null)
                     throw new Exception("Course note query returned a null cursor.");
                 while (noteCursor.moveToNext())
-                    course.notes.add(CourseNote.fromCursor(noteCursor));
+                    mCourse.notes.add(CourseNote.fromCursor(noteCursor));
             }
 
             try (Cursor assessmentCursor = mContentResolver.query(
@@ -150,7 +212,7 @@ public class CourseDetailActivity extends AppCompatActivity {
                 if (assessmentCursor == null)
                     throw new Exception("Course assessment query returned a null cursor.");
                 while (assessmentCursor.moveToNext())
-                    course.assessments.add(Assessment.fromCursor(assessmentCursor));
+                    mCourse.assessments.add(Assessment.fromCursor(assessmentCursor));
             }
         } catch(Exception e) {
             Log.d(getLocalClassName(), "Failed getting course information.\n" + e.toString());
@@ -158,7 +220,7 @@ public class CourseDetailActivity extends AppCompatActivity {
             return;
         }
 
-        CourseDetailViewAdapter.from(this, course, termTitle, findViewById(android.R.id.content)).render();
+        CourseDetailViewAdapter.from(this, mCourse, termTitle, findViewById(android.R.id.content)).render();
     }
 
     private void deleteCourse() {

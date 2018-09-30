@@ -56,10 +56,11 @@ public final class WGUContract {
         public static final String _ID = "_id";
         public static final String TITLE = "title";
         public static final String TYPE = "type";
+        public static final String START_DATE = "start_date";
         public static final String DUE_DATE = "due_date";
         public static final String COURSE_ID = "course_id";
 
-        public static final String[] COLUMNS = {_ID, TITLE, TYPE, DUE_DATE, COURSE_ID};
+        public static final String[] COLUMNS = {_ID, TITLE, TYPE, START_DATE, DUE_DATE, COURSE_ID};
 
     }
 
@@ -75,19 +76,6 @@ public final class WGUContract {
         public static final String COURSE_ID = "course_id";
 
         public static final String[] COLUMNS = {_ID, NAME, PHONE_NUMBER, EMAIL_ADDRESS, COURSE_ID};
-
-    }
-
-    public static class ScheduledAlerts {
-
-        public static final String TABLE_NAME = "scheduled_alerts";
-        public static final Uri CONTENT_URI = Uri.parse("content://"+AUTHORITY+"/"+TABLE_NAME);
-
-        public static final String _ID = "_id";
-        public static final String DATE = "date";
-        public static final String NAME = "name";
-
-        public static final String[] COLUMNS = {_ID, DATE, NAME};
 
     }
 
